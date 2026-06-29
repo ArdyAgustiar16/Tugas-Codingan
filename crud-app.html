@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>⬡ Ardy Agustiar  — Pemrograman Web Lanjut</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --neon-cyan:   #00f5ff;
+      --neon-purple: #bf5fff;
+      --neon-green:  #39ff14;
+      --neon-pink:   #ff2d78;
+      --neon-amber:  #ffc200;
+      --bg-void:     #06070d;
+      --bg-panel:    #0d1117;
+      --bg-card:     #111827;
+      --bg-input:    #0a0e18;
+      --border-dim:  rgba(0, 245, 255, 0.15);
+      --border-glow: rgba(0, 245, 255, 0.5);
+      --text-bright: #e2f4ff;
+      --text-mid:    #8badc8;
+      --text-dim:    #3d5a73;
+      --font-display: 'Orbitron', monospace;
+      --font-mono:    'Share Tech Mono', monospace;
+      --font-body:    'Inter', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg-void);
+      color: var(--text-bright);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── SCANLINE OVERLAY ─────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.08) 2px,
+        rgba(0,0,0,0.08) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── ANIMATED BG GRID ─────────────────────────── */
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,245,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,245,255,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: gridPulse 8s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+    @keyframes gridPulse {
+      0%, 100% { opacity: 0.5; }
+      50%       { opacity: 1; }
+    }
+
+    /* ── MAIN LAYOUT ──────────────────────────────── */
+    .app-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 20px 60px;
+    }
+
+    /* ── HEADER ───────────────────────────────────── */
+    header {
+      text-align: center;
+      padding: 40px 0 32px;
+      position: relative;
+    }
+    .header-badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--neon-green);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      border: 1px solid rgba(57, 255, 20, 0.3);
+      padding: 4px 14px;
+      border-radius: 2px;
+      margin-bottom: 16px;
+      animation: blinkBorder 3s ease-in-out infinite;
+    }
+    @keyframes blinkBorder {
+      0%, 90%, 100% { border-color: rgba(57,255,20,0.3); }
+      95%            { border-color: rgba(57,255,20,0.9); }
+    }
+    h1.main-title {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 5vw, 52px);
+      font-weight: 800;
+      letter-spacing: 4px;
+      background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-purple) 60%, var(--neon-pink) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
+      margin-bottom: 10px;
+    }
+    .header-sub {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text-mid);
+      letter-spacing: 2px;
+    }
+    .header-line {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--neon-cyan), var(--neon-purple), transparent);
+      margin: 24px 0 0;
+      animation: scanLine 4s linear infinite;
+    }
+    @keyframes scanLine {
+      0%   { opacity: 0.3; }
+      50%  { opacity: 1; }
+      100% { opacity: 0.3; }
+    }
+
+    /* ── STATS BAR ────────────────────────────────── */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin: 24px 0;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-dim);
+      border-radius: 4px;
+      padding: 14px 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+    .stat-card.cyan::before  { background: var(--neon-cyan); }
+    .stat-card.purple::before { background: var(--neon-purple); }
+    .stat-card.green::before  { background: var(--neon-green); }
+    .stat-card.pink::before   { background: var(--neon-pink); }
+    .stat-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--text-bright);
+    }
+    .stat-card.cyan .stat-value   { color: var(--neon-cyan); }
+    .stat-card.purple .stat-value { color: var(--neon-purple); }
+    .stat-card.green .stat-value  { color: var(--neon-green); }
+    .stat-card.pink .stat-value   { color: var(--neon-pink); }
+
+    /* ── MAIN GRID ────────────────────────────────── */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 860px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── PANEL ────────────────────────────────────── */
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-dim);
+      border-radius: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+    .panel::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+      opacity: 0.6;
+    }
+    .panel-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border-dim);
+      background: rgba(0,245,255,0.03);
+    }
+    .panel-icon {
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,245,255,0.1);
+      border: 1px solid rgba(0,245,255,0.25);
+      border-radius: 3px;
+      font-size: 14px;
+    }
+    .panel-title {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      color: var(--neon-cyan);
+    }
+    .panel-subtitle {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      margin-left: auto;
+    }
+    .panel-body { padding: 20px; }
+
+    /* ── FORM ─────────────────────────────────────── */
+    .form-mode-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 20px;
+      border: 1px solid var(--border-dim);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 8px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: var(--text-dim);
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: rgba(0,245,255,0.1);
+      color: var(--neon-cyan);
+    }
+    .tab-btn:hover:not(.active) {
+      background: rgba(255,255,255,0.04);
+      color: var(--text-mid);
+    }
+
+    .field-group { margin-bottom: 16px; }
+    .field-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-mid);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .field-label span.required {
+      color: var(--neon-pink);
+      font-size: 14px;
+      line-height: 1;
+    }
+    .field-input, .field-select, .field-textarea {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-dim);
+      border-radius: 3px;
+      color: var(--text-bright);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      padding: 10px 12px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+    }
+    .field-input::placeholder, .field-textarea::placeholder {
+      color: var(--text-dim);
+    }
+    .field-input:focus, .field-select:focus, .field-textarea:focus {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 0 1px rgba(0,245,255,0.15), 0 0 12px rgba(0,245,255,0.08);
+    }
+    .field-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2300f5ff' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 32px;
+      cursor: pointer;
+    }
+    .field-select option { background: var(--bg-card); color: var(--text-bright); }
+    .field-textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* ── BUTTONS ──────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border: 1px solid;
+      border-radius: 3px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+    }
+    .btn-primary {
+      background: rgba(0,245,255,0.1);
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+    }
+    .btn-primary:hover {
+      background: rgba(0,245,255,0.2);
+      box-shadow: 0 0 20px rgba(0,245,255,0.3);
+    }
+    .btn-update {
+      background: rgba(255,194,0,0.1);
+      border-color: var(--neon-amber);
+      color: var(--neon-amber);
+    }
+    .btn-update:hover {
+      background: rgba(255,194,0,0.2);
+      box-shadow: 0 0 20px rgba(255,194,0,0.3);
+    }
+    .btn-danger {
+      background: rgba(255,45,120,0.1);
+      border-color: var(--neon-pink);
+      color: var(--neon-pink);
+    }
+    .btn-danger:hover {
+      background: rgba(255,45,120,0.2);
+      box-shadow: 0 0 20px rgba(255,45,120,0.3);
+    }
+    .btn-ghost {
+      background: transparent;
+      border-color: var(--border-dim);
+      color: var(--text-mid);
+    }
+    .btn-ghost:hover {
+      border-color: var(--text-mid);
+      color: var(--text-bright);
+    }
+    .btn-sm { padding: 6px 12px; font-size: 11px; }
+    .btn-full { width: 100%; }
+    .btn-group { display: flex; gap: 8px; }
+
+    /* ── SEARCH & FILTER BAR ──────────────────────── */
+    .search-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .search-wrap {
+      flex: 1;
+      position: relative;
+    }
+    .search-icon {
+      position: absolute;
+      left: 12px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+      font-size: 14px;
+      pointer-events: none;
+    }
+    .search-input {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-dim);
+      border-radius: 3px;
+      color: var(--text-bright);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      padding: 9px 12px 9px 36px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-input::placeholder { color: var(--text-dim); }
+    .search-input:focus { border-color: var(--neon-cyan); }
+
+    /* ── DATA TABLE ───────────────────────────────── */
+    .table-wrap { overflow-x: auto; }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .data-table thead tr {
+      border-bottom: 1px solid rgba(0,245,255,0.2);
+    }
+    .data-table th {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--neon-cyan);
+      padding: 10px 12px;
+      text-align: left;
+      white-space: nowrap;
+      font-weight: 400;
+    }
+    .data-table td {
+      padding: 11px 12px;
+      color: var(--text-bright);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: middle;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+    .data-table tbody tr {
+      transition: background 0.15s;
+      cursor: pointer;
+    }
+    .data-table tbody tr:hover { background: rgba(0,245,255,0.04); }
+    .data-table tbody tr.selected { background: rgba(0,245,255,0.08); }
+    .data-table tbody tr.selected td { color: var(--text-bright); }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 2px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: 600;
+      border: 1px solid;
+    }
+    .badge-aktif   { background: rgba(57,255,20,0.1);  color: var(--neon-green);  border-color: rgba(57,255,20,0.3); }
+    .badge-nonaktif{ background: rgba(255,45,120,0.1); color: var(--neon-pink);   border-color: rgba(255,45,120,0.3); }
+    .badge-pending { background: rgba(255,194,0,0.1);  color: var(--neon-amber);  border-color: rgba(255,194,0,0.3); }
+
+    .id-chip {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--neon-purple);
+      background: rgba(191,95,255,0.1);
+      border: 1px solid rgba(191,95,255,0.25);
+      border-radius: 2px;
+      padding: 1px 6px;
+    }
+
+    .action-btns { display: flex; gap: 6px; }
+
+    /* ── TOAST NOTIFICATION ───────────────────────── */
+    #toast-container {
+      position: fixed;
+      top: 24px; right: 24px;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .toast {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-dim);
+      border-radius: 4px;
+      padding: 12px 16px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      min-width: 260px;
+      animation: toastIn 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .toast::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: 3px;
+    }
+    .toast.success::before { background: var(--neon-green); }
+    .toast.error::before   { background: var(--neon-pink); }
+    .toast.info::before    { background: var(--neon-cyan); }
+    .toast.warn::before    { background: var(--neon-amber); }
+    .toast-icon { font-size: 16px; }
+    .toast.success .toast-icon { color: var(--neon-green); }
+    .toast.error   .toast-icon { color: var(--neon-pink); }
+    .toast.info    .toast-icon { color: var(--neon-cyan); }
+    .toast.warn    .toast-icon { color: var(--neon-amber); }
+    .toast-msg { flex: 1; color: var(--text-bright); }
+    @keyframes toastIn { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: none; } }
+
+    /* ── EMPTY STATE ──────────────────────────────── */
+    .empty-state {
+      text-align: center;
+      padding: 48px 20px;
+    }
+    .empty-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.3; }
+    .empty-text {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+    }
+
+    /* ── MODAL ────────────────────────────────────── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(6,7,13,0.85);
+      z-index: 5000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--bg-panel);
+      border: 1px solid var(--neon-pink);
+      border-radius: 6px;
+      padding: 28px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 0 40px rgba(255,45,120,0.2);
+    }
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: 15px;
+      color: var(--neon-pink);
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+    .modal-msg {
+      font-size: 14px;
+      color: var(--text-mid);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+    .modal-msg strong { color: var(--text-bright); }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+    /* ── FOOTER ───────────────────────────────────── */
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-dim);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 2px;
+    }
+    .footer span { color: var(--neon-cyan); }
+
+    /* ── DETAIL VIEW ──────────────────────────────── */
+    .detail-panel {
+      display: none;
+      background: var(--bg-card);
+      border: 1px solid rgba(191,95,255,0.3);
+      border-radius: 4px;
+      padding: 16px;
+      margin-top: 12px;
+    }
+    .detail-panel.open { display: block; }
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      gap: 10px;
+    }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-key {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .detail-val {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-bright);
+      text-align: right;
+    }
+
+    /* ── PULSE DOT ────────────────────────────────── */
+    .pulse-dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--neon-green);
+      box-shadow: 0 0 6px var(--neon-green);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    /* ── EDIT MODE INDICATOR ──────────────────────── */
+    .edit-indicator {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(255,194,0,0.06);
+      border: 1px solid rgba(255,194,0,0.25);
+      border-radius: 3px;
+      margin-bottom: 16px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--neon-amber);
+      letter-spacing: 1px;
+    }
+    .edit-indicator.visible { display: flex; }
+
+    /* ── SCROLLBAR ────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-void); }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0,245,255,0.2);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(0,245,255,0.4); }
+
+    /* ── COUNTER ──────────────────────────────────── */
+    .record-count {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      margin-left: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+
+  <div id="toast-container"></div>
+
+  <!-- DELETE CONFIRM MODAL -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal-box">
+      <div class="modal-title">⚠ KONFIRMASI HAPUS</div>
+      <p class="modal-msg">
+        Anda akan menghapus data: <strong id="deleteTargetName">—</strong>.<br/>
+        Tindakan ini tidak dapat dibatalkan.
+      </p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeDeleteModal()">Batal</button>
+        <button class="btn btn-danger" onclick="confirmDelete()">Hapus Data</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-wrapper">
+
+    <!-- HEADER -->
+    <header>
+      <div class="header-badge">⬡ SISTEM AKTIF &nbsp;<span class="pulse-dot"></span></div>
+      <h1 class="main-title">DATA NEXUS</h1>
+      <p class="header-sub">CRUD MANAGEMENT CONSOLE &nbsp;•&nbsp; v2.4.1</p>
+      <div class="header-line"></div>
+    </header>
+
+    <!-- STATS -->
+    <div class="stats-bar">
+      <div class="stat-card cyan">
+        <div class="stat-label">Total Data</div>
+        <div class="stat-value" id="statTotal">0</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">Aktif</div>
+        <div class="stat-value" id="statAktif">0</div>
+      </div>
+      <div class="stat-card pink">
+        <div class="stat-label">Nonaktif</div>
+        <div class="stat-value" id="statNonaktif">0</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-label">Pending</div>
+        <div class="stat-value" id="statPending">0</div>
+      </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="main-grid">
+
+      <!-- LEFT: FORM PANEL -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-icon">✦</div>
+          <div class="panel-title">INPUT DATA</div>
+          <div class="panel-subtitle">FORM_ENTRY</div>
+        </div>
+        <div class="panel-body">
+
+          <!-- EDIT INDICATOR -->
+          <div class="edit-indicator" id="editIndicator">
+            ✎ MODE EDIT — ID: <span id="editIdLabel">—</span>
+          </div>
+
+          <form id="dataForm" onsubmit="return false;">
+            <div class="field-group">
+              <label class="field-label">Nama Lengkap <span class="required">*</span></label>
+              <input class="field-input" id="fNama" type="text" placeholder="Masukkan nama lengkap..." autocomplete="off" />
+            </div>
+
+            <div class="form-row">
+              <div class="field-group">
+                <label class="field-label">NIM / ID</label>
+                <input class="field-input" id="fNim" type="text" placeholder="Contoh: 22001234" autocomplete="off" />
+              </div>
+              <div class="field-group">
+                <label class="field-label">Angkatan</label>
+                <input class="field-input" id="fAngkatan" type="text" placeholder="2022" autocomplete="off" />
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">Program Studi</label>
+              <select class="field-select" id="fProdi">
+                <option value="">— Pilih Prodi —</option>
+                <option>Teknik Informatika</option>
+                <option>Sistem Informasi</option>
+                <option>Ilmu Komputer</option>
+                <option>Teknik Elektro</option>
+                <option>Manajemen Informatika</option>
+                <option>Desain Komunikasi Visual</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <div class="field-group">
+                <label class="field-label">IPK</label>
+                <input class="field-input" id="fIpk" type="number" step="0.01" min="0" max="4" placeholder="0.00" autocomplete="off" />
+              </div>
+              <div class="field-group">
+                <label class="field-label">Status</label>
+                <select class="field-select" id="fStatus">
+                  <option value="Aktif">Aktif</option>
+                  <option value="Nonaktif">Nonaktif</option>
+                  <option value="Pending">Pending</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">Email</label>
+              <input class="field-input" id="fEmail" type="email" placeholder="user@domain.com" autocomplete="off" />
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">Catatan</label>
+              <textarea class="field-textarea" id="fCatatan" placeholder="Catatan tambahan..."></textarea>
+            </div>
+
+            <div class="btn-group" style="margin-top: 4px;">
+              <button class="btn btn-primary btn-full" id="btnSubmit" onclick="submitForm()">
+                ＋ TAMBAH DATA
+              </button>
+              <button class="btn btn-ghost" onclick="resetForm()" title="Reset form" style="flex-shrink:0; padding:10px 14px;">
+                ↺
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- RIGHT: TABLE PANEL -->
+      <div>
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-icon">▤</div>
+            <div class="panel-title">DATABASE</div>
+            <span class="record-count" id="recordCount">0 record</span>
+          </div>
+          <div class="panel-body">
+
+            <!-- SEARCH + FILTER -->
+            <div class="search-bar">
+              <div class="search-wrap">
+                <span class="search-icon">⌕</span>
+                <input class="search-input" id="searchInput" type="text"
+                  placeholder="Cari nama, NIM, prodi..." oninput="renderTable()" />
+              </div>
+              <select class="field-select" id="filterStatus" onchange="renderTable()" style="width:120px; padding:9px 28px 9px 10px; font-size:11px;">
+                <option value="">Semua</option>
+                <option value="Aktif">Aktif</option>
+                <option value="Nonaktif">Nonaktif</option>
+                <option value="Pending">Pending</option>
+              </select>
+            </div>
+
+            <!-- TABLE -->
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>#ID</th>
+                    <th>Nama</th>
+                    <th>NIM</th>
+                    <th>Prodi</th>
+                    <th>IPK</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+              </table>
+              <div class="empty-state" id="emptyState">
+                <div class="empty-icon">⬡</div>
+                <div class="empty-text">— NO DATA FOUND —</div>
+              </div>
+            </div>
+
+            <!-- DETAIL VIEW -->
+            <div class="detail-panel" id="detailPanel">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+                <span style="font-family:var(--font-display); font-size:11px; color:var(--neon-purple); letter-spacing:2px;">◈ DETAIL RECORD</span>
+                <button onclick="closeDetail()" style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:16px;margin-left:auto;">✕</button>
+              </div>
+              <div id="detailContent"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      DATA NEXUS CRUD CONSOLE &nbsp;•&nbsp; <span>Visual Studio Code</span> &nbsp;•&nbsp; Powered by Vanilla JS
+    </div>
+
+  </div>
+
+  <script>
+    let db = [];
+    let idCounter = 1;
+    let editingId = null;
+    let deleteTargetId = null;
+    let selectedId = null;
+
+    // ── SEED DATA ──────────────────────────────────
+    const seedData = [
+      { nama:'Arya Pratama',    nim:'22001001', angkatan:'2022', prodi:'Teknik Informatika',    ipk:'3.85', status:'Aktif',    email:'arya@mail.com',    catatan:'Mahasiswa berprestasi' },
+      { nama:'Siti Rahma',      nim:'22001002', angkatan:'2022', prodi:'Sistem Informasi',      ipk:'3.60', status:'Aktif',    email:'siti@mail.com',    catatan:'' },
+      { nama:'Budi Santoso',    nim:'21001003', angkatan:'2021', prodi:'Ilmu Komputer',          ipk:'2.90', status:'Nonaktif', email:'budi@mail.com',   catatan:'Cuti semester' },
+      { nama:'Dewi Lestari',    nim:'23001004', angkatan:'2023', prodi:'Manajemen Informatika', ipk:'3.50', status:'Pending',  email:'dewi@mail.com',   catatan:'Menunggu verifikasi' },
+      { nama:'Rizki Firmansyah',nim:'22001005', angkatan:'2022', prodi:'Teknik Elektro',        ipk:'3.20', status:'Aktif',    email:'rizki@mail.com',  catatan:'' },
+    ];
+    seedData.forEach(d => {
+      db.push({ id: idCounter++, ...d, createdAt: new Date().toLocaleDateString('id-ID') });
+    });
+
+    // ── FORM SUBMIT ────────────────────────────────
+    function submitForm() {
+      const nama = document.getElementById('fNama').value.trim();
+      if (!nama) { showToast('Nama tidak boleh kosong!', 'error'); return; }
+
+      const record = {
+        nama,
+        nim:      document.getElementById('fNim').value.trim() || '—',
+        angkatan: document.getElementById('fAngkatan').value.trim() || '—',
+        prodi:    document.getElementById('fProdi').value || '—',
+        ipk:      parseFloat(document.getElementById('fIpk').value) || 0,
+        status:   document.getElementById('fStatus').value,
+        email:    document.getElementById('fEmail').value.trim() || '—',
+        catatan:  document.getElementById('fCatatan').value.trim(),
+      };
+
+      if (editingId !== null) {
+        const idx = db.findIndex(r => r.id === editingId);
+        db[idx] = { ...db[idx], ...record };
+        showToast(`Data "${nama}" berhasil diperbarui.`, 'warn');
+        cancelEdit();
+      } else {
+        record.id = idCounter++;
+        record.createdAt = new Date().toLocaleDateString('id-ID');
+        db.push(record);
+        showToast(`Data "${nama}" berhasil ditambahkan.`, 'success');
+        resetForm();
+      }
+      renderTable();
+      updateStats();
+    }
+
+    // ── EDIT ───────────────────────────────────────
+    function editRecord(id) {
+      const r = db.find(x => x.id === id);
+      if (!r) return;
+      editingId = id;
+      document.getElementById('fNama').value     = r.nama;
+      document.getElementById('fNim').value      = r.nim === '—' ? '' : r.nim;
+      document.getElementById('fAngkatan').value = r.angkatan === '—' ? '' : r.angkatan;
+      document.getElementById('fProdi').value    = r.prodi === '—' ? '' : r.prodi;
+      document.getElementById('fIpk').value      = r.ipk || '';
+      document.getElementById('fStatus').value   = r.status;
+      document.getElementById('fEmail').value    = r.email === '—' ? '' : r.email;
+      document.getElementById('fCatatan').value  = r.catatan;
+
+      document.getElementById('editIdLabel').textContent = `#${id}`;
+      document.getElementById('editIndicator').classList.add('visible');
+      document.getElementById('btnSubmit').textContent = '✎ SIMPAN PERUBAHAN';
+      document.getElementById('btnSubmit').className = 'btn btn-update btn-full';
+      document.querySelector('.app-wrapper').scrollTo(0,0);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelEdit() {
+      editingId = null;
+      document.getElementById('editIndicator').classList.remove('visible');
+      document.getElementById('btnSubmit').textContent = '＋ TAMBAH DATA';
+      document.getElementById('btnSubmit').className = 'btn btn-primary btn-full';
+      resetForm();
+    }
+
+    // ── DELETE ─────────────────────────────────────
+    function deleteRecord(id) {
+      const r = db.find(x => x.id === id);
+      if (!r) return;
+      deleteTargetId = id;
+      document.getElementById('deleteTargetName').textContent = r.nama;
+      document.getElementById('deleteModal').classList.add('open');
+    }
+    function closeDeleteModal() {
+      deleteTargetId = null;
+      document.getElementById('deleteModal').classList.remove('open');
+    }
+    function confirmDelete() {
+      const r = db.find(x => x.id === deleteTargetId);
+      db = db.filter(x => x.id !== deleteTargetId);
+      if (selectedId === deleteTargetId) closeDetail();
+      closeDeleteModal();
+      showToast(`Data "${r.nama}" dihapus.`, 'error');
+      renderTable();
+      updateStats();
+    }
+
+    // ── RESET FORM ─────────────────────────────────
+    function resetForm() {
+      ['fNama','fNim','fAngkatan','fIpk','fEmail','fCatatan'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      document.getElementById('fProdi').value  = '';
+      document.getElementById('fStatus').value = 'Aktif';
+    }
+
+    // ── DETAIL VIEW ────────────────────────────────
+    function showDetail(id) {
+      const r = db.find(x => x.id === id);
+      if (!r) return;
+      selectedId = id;
+      const fields = [
+        ['ID Record', `#${r.id}`],
+        ['Nama Lengkap', r.nama],
+        ['NIM', r.nim],
+        ['Angkatan', r.angkatan],
+        ['Program Studi', r.prodi],
+        ['IPK', r.ipk ? parseFloat(r.ipk).toFixed(2) : '—'],
+        ['Status', r.status],
+        ['Email', r.email],
+        ['Terdaftar', r.createdAt],
+        ['Catatan', r.catatan || '—'],
+      ];
+      document.getElementById('detailContent').innerHTML = fields.map(([k,v]) =>
+        `<div class="detail-row">
+          <span class="detail-key">${k}</span>
+          <span class="detail-val">${v}</span>
+        </div>`
+      ).join('');
+      document.getElementById('detailPanel').classList.add('open');
+      renderTable();
+    }
+    function closeDetail() {
+      selectedId = null;
+      document.getElementById('detailPanel').classList.remove('open');
+      renderTable();
+    }
+
+    // ── RENDER TABLE ───────────────────────────────
+    function renderTable() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const filter = document.getElementById('filterStatus').value;
+
+      const filtered = db.filter(r => {
+        const matchSearch = !search ||
+          r.nama.toLowerCase().includes(search) ||
+          r.nim.toLowerCase().includes(search) ||
+          r.prodi.toLowerCase().includes(search) ||
+          r.email.toLowerCase().includes(search);
+        const matchFilter = !filter || r.status === filter;
+        return matchSearch && matchFilter;
+      });
+
+      const tbody = document.getElementById('tableBody');
+      const empty = document.getElementById('emptyState');
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '';
+        empty.style.display = 'block';
+      } else {
+        empty.style.display = 'none';
+        tbody.innerHTML = filtered.map(r => {
+          const badgeClass = r.status === 'Aktif' ? 'badge-aktif' :
+                             r.status === 'Nonaktif' ? 'badge-nonaktif' : 'badge-pending';
+          const selected = r.id === selectedId ? 'selected' : '';
+          return `<tr class="${selected}" onclick="showDetail(${r.id})">
+            <td><span class="id-chip">#${r.id}</span></td>
+            <td style="font-weight:500; color:var(--text-bright)">${r.nama}</td>
+            <td>${r.nim}</td>
+            <td style="max-width:130px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${r.prodi}</td>
+            <td style="color:var(--neon-amber)">${r.ipk ? parseFloat(r.ipk).toFixed(2) : '—'}</td>
+            <td><span class="badge ${badgeClass}">${r.status}</span></td>
+            <td>
+              <div class="action-btns" onclick="event.stopPropagation()">
+                <button class="btn btn-ghost btn-sm" onclick="editRecord(${r.id})" title="Edit">✎</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteRecord(${r.id})" title="Hapus">✕</button>
+              </div>
+            </td>
+          </tr>`;
+        }).join('');
+      }
+      document.getElementById('recordCount').textContent = `${filtered.length} record`;
+    }
+
+    // ── STATS ──────────────────────────────────────
+    function updateStats() {
+      document.getElementById('statTotal').textContent    = db.length;
+      document.getElementById('statAktif').textContent   = db.filter(r => r.status === 'Aktif').length;
+      document.getElementById('statNonaktif').textContent = db.filter(r => r.status === 'Nonaktif').length;
+      document.getElementById('statPending').textContent  = db.filter(r => r.status === 'Pending').length;
+    }
+
+    // ── TOAST ──────────────────────────────────────
+    function showToast(msg, type = 'info') {
+      const icons = { success:'✔', error:'✕', info:'ℹ', warn:'⚠' };
+      const el = document.createElement('div');
+      el.className = `toast ${type}`;
+      el.innerHTML = `<span class="toast-icon">${icons[type]}</span><span class="toast-msg">${msg}</span>`;
+      document.getElementById('toast-container').appendChild(el);
+      setTimeout(() => el.remove(), 3500);
+    }
+
+    // ── CLOSE MODAL ON OVERLAY CLICK ───────────────
+    document.getElementById('deleteModal').addEventListener('click', e => {
+      if (e.target === e.currentTarget) closeDeleteModal();
+    });
+
+    // ── INIT ───────────────────────────────────────
+    renderTable();
+    updateStats();
+  </script>
+</body>
+</html>
